@@ -69,7 +69,11 @@ class ProductRepository implements IProductRepository {
     int k = 0;
 
     for (var i = 0; i < csvList.length; i++) {
-      ids.add(int.parse(csvList[i][k]));
+      if (csvList[i][k].runtimeType == String) {
+        ids.add(int.parse(csvList[i][k]));
+      } else {
+        ids.add(csvList[i][k] as int);
+      }
     }
 
     return ids;
@@ -77,29 +81,10 @@ class ProductRepository implements IProductRepository {
 
   @override
   List<List<dynamic>> resizeList(List<List<dynamic>> readList) {
-    List<List<dynamic>> resizedList = [];
-
     //remove the heading of the csv file
     readList.removeAt(0);
 
-    //if there are more than 20 elements, return the resized list
-    if (readList.length > 19) {
-      print('\nTroppi elementi nel file, verranno utilizzati solo i primi 20.');
-      for (var i = 0; i < 20; i++) {
-        resizedList.add(readList[i]);
-      }
-      return resizedList;
-    }
-    //Element count is ok, return the list
     return readList;
-  }
-
-  @override
-  Future<List<Product>> getProductList(List<int> ids) async {
-    String response = await client.getProducts(ids);
-    List<Product> productList =
-        (jsonDecode(response) as List).map((p) => Product.fromJson(p)).toList();
-    return productList;
   }
 
   @override
@@ -134,7 +119,13 @@ class ProductRepository implements IProductRepository {
 
       for (var j = 0; j < list.length; j++) {
         if (list[i][1] == list[j][1]) {
-          qty += int.parse(list[j][2]);
+          if (list[j][2].runtimeType == String) {
+            if (list[j][2] != '') {
+              qty += int.parse(list[j][2]);
+            }
+          } else {
+            qty += (list[j][2]) as int;
+          }
         }
       }
       skuQty.add(list[i][1]);
@@ -173,5 +164,33 @@ class ProductRepository implements IProductRepository {
     assignQty(csvList, qtyList);
 
     return csvList;
+  }
+
+  @override
+  Future<List<Product>> getProductList(List<int> ids) async {
+    List<Product> fullList = [];
+    bool count = false;
+
+    int i = 0;
+    while (count == false) {
+      List<int> tempIds = ids.skip(i).take(20).toList();
+      List<Product> tempProducts = await getTempProductList(tempIds);
+      fullList.addAll(tempProducts);
+      i += 20;
+      if (i >= ids.length) {
+        count = true;
+      }
+    }
+
+    return fullList;
+  }
+
+  @override
+  Future<List<Product>> getTempProductList(List<int> ids) async {
+    String response = await client.getProducts(ids);
+    List<Product> productList =
+        (jsonDecode(response) as List).map((p) => Product.fromJson(p)).toList();
+
+    return productList;
   }
 }

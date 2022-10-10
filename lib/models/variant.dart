@@ -1,9 +1,9 @@
 ///Model class to decode the 'variants' list in the Product model.
 
 class Variant {
-  int id;
-  int price;
-  int compareAtPrice;
+  int? id;
+  num price;
+  int? compareAtPrice;
   String? option1;
   String? option2;
   String sku;

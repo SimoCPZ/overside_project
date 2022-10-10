@@ -13,7 +13,7 @@ class MainController {
     return await _fileManager.readCsv(_fileManager.csvInput);
   }
 
-  ///Removes the read heading and, if necessary, resizes the list
+  ///Removes the list heading
   List<List> resizeList(List<List<dynamic>> readList) {
     return _productRepo.resizeList(readList);
   }

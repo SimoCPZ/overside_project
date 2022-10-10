@@ -5,10 +5,13 @@ abstract class IProductRepository {
   ///Converts the read csv string to a list
   List<List<dynamic>> csvConvert(String content);
 
-  ///Gets the product list from the api and converts it
+  ///Gets a max of 20 id and converts it to a List<Product>
+  Future<List<Product>> getTempProductList(List<int> ids);
+
+  ///Given the id list, returns the full product list
   Future<List<Product>> getProductList(List<int> ids);
 
-  ///Removes the read heading and, if necessary, resizes the list
+  ///Removes the list heading and
   List<List<dynamic>> resizeList(List<List<dynamic>> readList);
 
   ///Returns the list of the ids from the given list

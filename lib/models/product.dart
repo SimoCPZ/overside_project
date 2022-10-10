@@ -1,6 +1,6 @@
 import 'variant.dart';
 
-///Model class for the products that I get calling the API.
+///Model class for the products that you get calling the API.
 class Product {
   int id;
   String handle;
